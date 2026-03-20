@@ -1,0 +1,21 @@
+{
+  "name": "Kalender Bali Digital",
+  "short_name": "Kalender Bali",
+  "description": "Aplikasi Kalender Bali Digital modern dengan fitur Dewasa Ayu dan Otonan.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fdfdfd",
+  "theme_color": "#D4AF37",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
