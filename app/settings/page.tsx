@@ -6,11 +6,24 @@ import { useState, useEffect } from "react";
 
 export default function SettingsPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   // Initialize theme from document class or localStorage
   useEffect(() => {
     const isDark = document.documentElement.classList.contains("dark");
     setIsDarkMode(isDark);
+
+    // PWA Install Prompt Listener
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    };
   }, []);
 
   const toggleDarkMode = () => {
@@ -24,6 +37,17 @@ export default function SettingsPage() {
       document.documentElement.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
+  };
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) {
+      alert("Aplikasi sudah terinstal, atau browser perangkat Anda belum mendukung otomatisasi ini.");
+      return;
+    }
+    
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    setDeferredPrompt(null);
   };
 
   return (
@@ -51,8 +75,11 @@ export default function SettingsPage() {
         <p className="text-sm text-foreground/70 leading-relaxed font-medium">
           Dapatkan pengalaman terbaik dengan menambahkan Kalender Bali ke layar utama ponsel Anda.
         </p>
-        <button className="bg-accent-gold text-white font-bold py-4 rounded-2xl transition-transform active:scale-95">
-          Tambah ke Layar Utama
+        <button 
+          onClick={handleInstallClick}
+          className="bg-accent-gold text-white font-bold py-4 rounded-2xl transition-transform active:scale-95"
+        >
+          {deferredPrompt ? "Tambah ke Layar Utama" : "Sudah Terinstal / Didukung"}
         </button>
       </motion.div>
 
@@ -64,7 +91,7 @@ export default function SettingsPage() {
         </div>
         <div className="glass-card p-6 rounded-3xl flex flex-col gap-2 shadow-sm">
           <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Update</p>
-          <p className="font-bold font-outfit">Okt 2023</p>
+          <p className="font-bold font-outfit">Maret 2026</p>
         </div>
       </div>
 
