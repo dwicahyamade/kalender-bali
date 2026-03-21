@@ -2,6 +2,7 @@ import {
   WEWARAN, WUKU, URIP_SAPTA, URIP_PANCA,
   getDaysSinceRef, type BalineseDate
 } from "./constants";
+import { BalineseDate as BaliDate, BalineseDateUtil } from "balinese-date-js-lib";
 
 // ============================================================
 // MAIN FUNCTION: Get Balinese date for any Gregorian date
@@ -82,21 +83,23 @@ export function getBalineseDate(targetDate: Date): BalineseDate {
   const dasaCalc = (uripSapta + uripPanca) % 10;
   const dasaName = WEWARAN.dasa[dasaCalc];
 
-  // 11. Saka Year (Transitions at Nyepi)
-  const gregorianYear = targetDate.getFullYear();
-  let yearSaka = gregorianYear - 78;
-  const nyepiDateStr = NYEPI_DATES[gregorianYear];
-  if (nyepiDateStr) {
-    const [nyYear, nyMonth, nyDay] = nyepiDateStr.split("-").map(Number);
-    const nyDateLocal = new Date(nyYear, nyMonth - 1, nyDay);
-    const targetMidnight = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
-    if (targetMidnight < nyDateLocal) {
-      yearSaka -= 1;
-    }
-  }
+  // -- Integration with balinese-date-js-lib --
+  const bDate = new BaliDate(targetDate);
+  
+  // Saka Year from library
+  const yearSakaValue = bDate.saka;
+  
+  // Holiday Detection (Rerainan) using the library
+  const rahinans = BalineseDateUtil.getRahinan(bDate);
+  const holiday = rahinans.length > 0 ? rahinans.map(r => r.name).join(", ") : null;
 
-  // 12. Holiday Detection (Rerainan)
-  const holiday = getHoliday(saptaName, pancaName, wukuName, triName, targetDate);
+  // Purnama/Tilem check from library
+  const isPurnama = bDate.sasihDayInfo.name === "Purnama";
+  const isTilem = bDate.sasihDayInfo.name === "Tilem";
+
+  // Sasih Info
+  const sasihName = bDate.sasih.name;
+  const sasihDay = `${bDate.sasihDayInfo.name} ${bDate.sasihDay[0]}`; // e.g., "Penanggal 5" or "Purnama 15"
 
   return {
     dateMasehi: targetDate.toLocaleDateString("id-ID"),
@@ -111,141 +114,34 @@ export function getBalineseDate(targetDate: Date): BalineseDate {
     astawara: astaName,
     sangawara: sangaName,
     dasawara: dasaName,
-    yearSaka: yearSaka,
+    yearSaka: yearSakaValue,
     holiday: holiday,
+    isPurnama: isPurnama,
+    isTilem: isTilem,
+    sasih: sasihName,
+    sasihDay: sasihDay,
   };
 }
 
 // ============================================================
-// NYEPI DATES (Lunar-based, must be hardcoded)
+// LUNAR PHASE (PURNAMA / TILEM APPROXIMATION)
 // ============================================================
 
-const NYEPI_DATES: Record<number, string> = {
-  2000: "2000-04-04",
-  2001: "2001-03-25",
-  2002: "2002-03-13",
-  2003: "2003-04-02",
-  2004: "2004-03-22",
-  2005: "2005-03-11",
-  2006: "2006-03-30",
-  2007: "2007-03-19",
-  2008: "2008-03-07",
-  2009: "2009-03-26",
-  2010: "2010-03-16",
-  2011: "2011-03-05",
-  2012: "2012-03-23",
-  2013: "2013-03-12",
-  2014: "2014-03-31",
-  2015: "2015-03-21",
-  2016: "2016-03-09",
-  2017: "2017-03-28",
-  2018: "2018-03-17",
-  2019: "2019-03-07",
-  2020: "2020-03-25",
-  2021: "2021-03-14",
-  2022: "2022-03-03",
-  2023: "2023-03-22",
-  2024: "2024-03-11",
-  2025: "2025-03-29",
-  2026: "2026-03-19",
-  2027: "2027-03-08",
-  2028: "2028-03-27",
-  2029: "2029-03-16",
-  2030: "2030-03-06",
-};
-
-// ============================================================
-// HOLIDAY DETECTION (Rerainan / Rahinan)
-// ============================================================
-
-export function getHoliday(
-  sapta: string,
-  panca: string,
-  wuku: string,
-  tri: string,
-  targetDate: Date
-): string | null {
-  const year = targetDate.getFullYear();
-  const month = targetDate.getMonth();
-  const day = targetDate.getDate();
-  const localDateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-
-  // --- A. Nyepi (Lunar-based, hardcoded) ---
-  if (NYEPI_DATES[year] === localDateStr) return "Hari Raya Nyepi";
-
-  // --- B. Major Pawukon holidays (210-day cycle) ---
-
-  // Saraswati: Saniscara Umanis Watugunung
-  if (wuku === "Watugunung" && sapta === "Saniscara" && panca === "Umanis") return "Saraswati";
-
-  // Banyu Pinaruh: Redite Paing Sinta (day after Saraswati / first day of new pawukon)
-  if (wuku === "Sinta" && sapta === "Redite" && panca === "Paing") return "Banyu Pinaruh";
-
-  // Soma Ribek: Soma Pon Sinta
-  if (wuku === "Sinta" && sapta === "Soma" && panca === "Pon") return "Soma Ribek";
-
-  // Sabuh Mas: Anggara Wage Sinta
-  if (wuku === "Sinta" && sapta === "Anggara" && panca === "Wage") return "Sabuh Mas";
-
-  // Pagerwesi: Buda Kliwon Sinta
-  if (wuku === "Sinta" && sapta === "Buda" && panca === "Kliwon") return "Pagerwesi";
-
-  // Galungan: Buda Kliwon Dungulan
-  if (wuku === "Dungulan" && sapta === "Buda" && panca === "Kliwon") return "Galungan";
-
-  // Manis Galungan: Wrespati Umanis Dungulan (day after Galungan)
-  if (wuku === "Dungulan" && sapta === "Wrespati" && panca === "Umanis") return "Manis Galungan";
-
-  // Kuningan: Saniscara Kliwon Kuningan
-  if (wuku === "Kuningan" && sapta === "Saniscara" && panca === "Kliwon") return "Kuningan";
-
-  // Manis Kuningan: Redite Umanis Langkir (day after Kuningan)
-  if (wuku === "Langkir" && sapta === "Redite" && panca === "Umanis") return "Manis Kuningan";
-
-  // Penampahan Galungan: Anggara Wage Dungulan (day before Galungan)
-  if (wuku === "Dungulan" && sapta === "Anggara" && panca === "Wage") return "Penampahan Galungan";
-
-  // Penyekeban: Redite Pon Dungulan (3 days before Galungan)
-  if (wuku === "Dungulan" && sapta === "Redite" && panca === "Pon") return "Penyekeban";
-
-  // Penyajaan: Soma Wage Dungulan (2 days before Galungan)
-  if (wuku === "Dungulan" && sapta === "Soma" && panca === "Wage") return "Penyajaan";
-
-  // Sugihan Jawa: Sukra Kliwon Sungsang
-  if (wuku === "Sungsang" && sapta === "Sukra" && panca === "Kliwon") return "Sugihan Jawa";
-
-  // Sugihan Bali: Saniscara Umanis Sungsang
-  if (wuku === "Sungsang" && sapta === "Saniscara" && panca === "Umanis") return "Sugihan Bali";
-
-  // --- C. Tumpek: ALL Saniscara Kliwon ---
-  if (sapta === "Saniscara" && panca === "Kliwon") {
-    if (wuku === "Landep") return "Tumpek Landep";
-    if (wuku === "Wariga") return "Tumpek Wariga (Uduh)";
-    if (wuku === "Kuningan") return "Tumpek Kuningan";
-    if (wuku === "Krulut") return "Tumpek Krulut";
-    if (wuku === "Uye") return "Tumpek Uye (Kandang)";
-    if (wuku === "Wayang") return "Tumpek Wayang";
-    return "Tumpek";
-  }
-
-  // --- D. Recurring Rarahinan ---
-  // Kajeng Kliwon: every 15 days
-  if (tri === "Kajeng" && panca === "Kliwon") return "Kajeng Kliwon";
-
-  // Anggara Kasih: Anggara Kliwon
-  if (sapta === "Anggara" && panca === "Kliwon") return "Anggara Kasih";
-
-  // Buda Kliwon (generic, after specific wuku checks)
-  if (sapta === "Buda" && panca === "Kliwon") return "Buda Kliwon";
-
-  // Buda Wage (Buda Cemeng)
-  if (sapta === "Buda" && panca === "Wage") return "Buda Wage";
-
+export function getPurnamaTilem(date: Date): "Purnama" | "Tilem" | null {
+  const bDate = new BaliDate(date);
+  const dayInfo = bDate.sasihDayInfo;  // enum: PURNAMA, TILEM, PENANGGAL, PANGELONG
+  
+  if (dayInfo.name === "Purnama") return "Purnama";
+  if (dayInfo.name === "Tilem")   return "Tilem";
   return null;
 }
 
 // ============================================================
-// DEWASA AYU (Auspicious Date Finder)
+// REMOVED: NYEPI DATES (Now handled by balinese-date-js-lib)
+// ============================================================
+
+// ============================================================
+// REMOVED: GET HOLIDAY (Now handled by balinese-date-js-lib)
 // ============================================================
 
 export function findDewasaAyu(month: number, year: number, category: string) {
@@ -254,21 +150,67 @@ export function findDewasaAyu(month: number, year: number, category: string) {
 
   for (let d = 1; d <= daysInMonth; d++) {
     const date = new Date(year, month, d);
-    const baliDate = getBalineseDate(date);
+    const bDate = new BaliDate(date);
+    const bali = getBalineseDate(date);
+
+    let isAyu = false;
+    let score = 0;
+    let resonName = "";
 
     if (category === "nikah") {
-      if (
-        (baliDate.saptawara === "Soma" && baliDate.pancawara === "Paing") ||
-        (baliDate.saptawara === "Buda" && baliDate.pancawara === "Wage")
-      ) {
-        results.push({
-          day: d,
-          info: `${baliDate.saptawara} ${baliDate.pancawara}, ${baliDate.wuku}`,
-          quality: "Sangat Baik",
-        });
+      // Nikah: Avoid Ingkel Wong, check Panca Suda & Dasa Wara
+      const badIngkel = bDate.ingkel.name === "Wong";
+      const goodPancaSuda = ["Wisesa Segara", "Satria Wibawa", "Sumur Sinaba"].includes(bDate.pancaSuda.name);
+      const goodDasaWara = ["Pandita", "Dewa", "Raja", "Suka"].includes(bDate.dasaWara.name);
+      
+      if (!badIngkel && (goodPancaSuda || goodDasaWara)) {
+        isAyu = true;
+        score = goodPancaSuda && goodDasaWara ? 100 : 80;
+        resonName = bDate.pancaSuda.name;
+      }
+    } else if (category === "rumah") {
+      // Bangun Rumah: Avoid Ingkel Taru & Suku, check Panca Suda
+      const badIngkel = ["Taru", "Suku"].includes(bDate.ingkel.name);
+      const goodPancaSuda = ["Bumi Kapetak", "Satria Wibawa", "Sumur Sinaba"].includes(bDate.pancaSuda.name);
+      
+      if (!badIngkel && goodPancaSuda) {
+        isAyu = true;
+        score = 85;
+        resonName = bDate.pancaSuda.name;
+      }
+    } else if (category === "dagang") {
+      // Buka Usaha: Focus on Wisesa Segara or Sumur Sinaba (Rejeki)
+      const goodPancaSuda = ["Wisesa Segara", "Sumur Sinaba"].includes(bDate.pancaSuda.name);
+      const goodLaku = ["Laku Bintang", "Laku Bulan", "Laku Surya"].includes(bDate.pararasan.name);
+      
+      if (goodPancaSuda || (goodLaku && !["Buta", "Kala"].includes(bDate.watekMadya.name))) {
+        isAyu = true;
+        score = goodPancaSuda ? 95 : 80;
+        resonName = goodPancaSuda ? bDate.pancaSuda.name : bDate.pararasan.name;
+      }
+    } else if (category === "karya") {
+      // Upacara/Karya: Avoid Watek Buta/Kala, check Panca Suda
+      const badWatek = ["Buta", "Kala"].includes(bDate.watekMadya.name);
+      const goodPancaSuda = ["Satria Wibawa", "Wisesa Segara"].includes(bDate.pancaSuda.name);
+      
+      if (!badWatek && (goodPancaSuda || bDate.dasaWara.name === "Pandita")) {
+        isAyu = true;
+        score = 90;
+        resonName = bDate.dasaWara.name === "Pandita" ? "Dasa Wara Pandita" : bDate.pancaSuda.name;
       }
     }
-    // Add more categories...
+
+    if (isAyu) {
+      results.push({
+        day: d,
+        info: `${bali.saptawara} ${bali.pancawara}, ${bali.wuku}`,
+        quality: score >= 90 ? "Sangat Baik" : "Baik",
+        reason: resonName,
+        bali: bali // include for UI
+      });
+    }
   }
-  return results;
+
+  // Sort by day
+  return results.sort((a, b) => a.day - b.day);
 }

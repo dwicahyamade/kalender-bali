@@ -104,4 +104,8 @@ export type BalineseDate = {
   dasawara: string;
   yearSaka: number;
   holiday: string | null;
+  isPurnama: boolean;
+  isTilem: boolean;
+  sasih: string;
+  sasihDay: string; // e.g., "Penanggal 1"
 };

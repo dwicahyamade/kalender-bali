@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [today, setToday] = useState<any>(null);
   const [tomorrow, setTomorrow] = useState<any>(null);
+  const [monthHolidays, setMonthHolidays] = useState<{day: number, name: string, type: string, dateStr: string}[]>([]);
+  const [currentMonthName, setCurrentMonthName] = useState("");
 
   useEffect(() => {
     const todayDate = new Date();
@@ -17,6 +19,26 @@ export default function Home() {
 
     setToday(getBalineseDate(todayDate));
     setTomorrow(getBalineseDate(tomorrowDate));
+
+    setCurrentMonthName(todayDate.toLocaleString("id-ID", { month: "long", year: "numeric" }));
+
+    const year = todayDate.getFullYear();
+    const month = todayDate.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const holidays = [];
+    for (let i = 1; i <= daysInMonth; i++) {
+      const d = new Date(year, month, i);
+      const bali = getBalineseDate(d);
+      if (bali.holiday) {
+        holidays.push({ 
+          day: i, 
+          name: bali.holiday, 
+          type: 'Holiday', 
+          dateStr: d.toLocaleDateString("id-ID", { day: "numeric", month: "short" }) 
+        });
+      }
+    }
+    setMonthHolidays(holidays);
   }, []);
 
   if (!today || !tomorrow) return null;
@@ -54,26 +76,83 @@ export default function Home() {
           </button>
         </div>
 
-        <h2 className="text-4xl font-bold font-outfit mb-2">{today.saptawara}, {today.pancawara}</h2>
-        <p className="text-xl text-foreground font-medium mb-1 underline decoration-accent-gold/30 underline-offset-4">Wuku {today.wuku}</p>
-        <p className="text-sm text-foreground/50 font-medium">{today.dateMasehi} • Tahun Saka {today.yearSaka}</p>
+        <h2 className="text-4xl font-bold font-outfit mb-2 leading-tight">{today.saptawara} {today.pancawara}</h2>
+        <div className="flex items-center gap-3 mb-4">
+          <p className="text-xl text-foreground font-bold font-outfit uppercase tracking-wider underline decoration-accent-gold/40 underline-offset-8">Wuku {today.wuku}</p>
+          <div className="h-1 w-1 rounded-full bg-foreground/20" />
+          <p className="text-sm text-accent-gold font-bold">{today.sasih}</p>
+        </div>
+        <p className="text-xs text-foreground/40 font-bold uppercase tracking-widest">{today.dateMasehi} • Tahun Saka {today.yearSaka}</p>
 
-        <div className="mt-8 grid grid-cols-2 gap-4">
-          <div className="bg-foreground/5 p-4 rounded-2xl">
-            <p className="text-[10px] uppercase font-bold text-foreground/40 mb-1">Tri Wara</p>
-            <p className="font-bold text-lg">{today.triwara}</p>
+        <div className="mt-10">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="font-bold text-xl font-outfit text-white">Rahinan Bulan Ini</h3>
+              <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-accent-gold/50">{currentMonthName}</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-accent-gold">
+              <CalendarIcon size={20} />
+            </div>
           </div>
-          <div className="bg-foreground/5 p-4 rounded-2xl">
-            <p className="text-[10px] uppercase font-bold text-foreground/40 mb-1">Sad Wara</p>
-            <p className="font-bold text-lg">{today.sadwara}</p>
-          </div>
-          <div className="bg-foreground/5 p-4 rounded-2xl">
-            <p className="text-[10px] uppercase font-bold text-foreground/40 mb-1">Eka Wara</p>
-            <p className="font-bold text-lg">{today.ekawara}</p>
-          </div>
-          <div className="bg-foreground/5 p-4 rounded-2xl">
-            <p className="text-[10px] uppercase font-bold text-foreground/40 mb-1">Dasa Wara</p>
-            <p className="font-bold text-lg">{today.dasawara}</p>
+
+          <div className="space-y-6">
+            {/* Mendatang Section */}
+            {monthHolidays.filter(h => h.day >= new Date().getDate()).length > 0 && (
+              <div className="space-y-3">
+                <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500/60 px-2 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Mendatang
+                </p>
+                <div className="grid gap-2 outline-none">
+                  {monthHolidays
+                    .filter(h => h.day >= new Date().getDate())
+                    .map((h, i) => (
+                      <motion.div 
+                        key={`up-${i}`}
+                        whileHover={{ x: 5 }}
+                        className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.07] hover:border-accent-gold/20 transition-all group"
+                      >
+                        <div className="flex flex-col items-center justify-center min-w-[48px] h-12 rounded-xl bg-white/5 border border-white/5 group-hover:bg-accent-gold/10 transition-colors">
+                          <span className="text-[9px] font-bold text-foreground/30 uppercase leading-none mb-1 group-hover:text-accent-gold/50">Tgl</span>
+                          <span className="text-base font-bold font-outfit leading-none">{h.day}</span>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-sm font-bold text-white group-hover:text-accent-gold transition-colors">{h.name}</h4>
+                          <p className="text-[10px] text-foreground/40 font-medium">Bulan {currentMonthName.split(' ')[0]}</p>
+                        </div>
+                        <ArrowRight size={14} className="text-white/10 group-hover:text-accent-gold/40 transition-colors" />
+                      </motion.div>
+                    ))}
+                </div>
+              </div>
+            )}
+
+            {/* Sudah Lewat Section */}
+            {monthHolidays.filter(h => h.day < new Date().getDate()).length > 0 && (
+              <div className="space-y-3 opacity-50">
+                <p className="text-[10px] font-black uppercase tracking-widest text-foreground/40 px-2">Sudah Lewat</p>
+                <div className="grid gap-2">
+                  {monthHolidays
+                    .filter(h => h.day < new Date().getDate())
+                    .map((h, i) => (
+                      <div key={`past-${i}`} className="flex items-center gap-4 p-3 rounded-2xl bg-black/20 border border-white/5">
+                        <div className="flex flex-col items-center justify-center min-w-[40px] h-10 rounded-lg bg-white/5 grayscale">
+                          <span className="text-sm font-bold font-outfit">{h.day}</span>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-xs font-bold text-foreground/60 line-through decoration-white/20">{h.name}</h4>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+
+            {monthHolidays.length === 0 && (
+              <div className="text-center py-10 px-6 border border-dashed border-white/10 rounded-3xl">
+                <p className="text-sm text-foreground/30 font-medium italic">Tidak ada rahinan di bulan ini.</p>
+              </div>
+            )}
           </div>
         </div>
       </motion.section>
