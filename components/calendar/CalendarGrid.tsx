@@ -87,34 +87,34 @@ export default function CalendarGrid() {
               whileTap={{ scale: 0.95 }}
               onClick={() => setSelectedDate(date)}
               className={`aspect-square p-2 rounded-2xl flex flex-col items-center justify-center relative group cursor-pointer transition-all duration-300 ${
-                isSelected ? "bg-accent-gold text-white shadow-lg shadow-accent-gold/20" : 
+                isSelected ? "bg-accent-gold text-black shadow-lg shadow-accent-gold/20" : 
                 date.baliInfo.saptawara === "Redite" ? "bg-accent-crimson/5" : "hover:bg-foreground/5"
               }`}
             >
               <span className={`text-sm font-bold ${
-                isSelected ? "text-white" : 
+                isSelected ? "text-black" : 
                 date.baliInfo.saptawara === "Redite" ? "text-accent-crimson" : "text-foreground"
               }`}>
                 {date.holiday ? (
                   <>
-                    <span className={isSelected ? "text-white" : "text-accent-crimson"}>(</span>
+                    <span className={isSelected ? "text-black" : "text-accent-crimson"}>(</span>
                     {date.day}
-                    <span className={isSelected ? "text-white" : "text-accent-crimson"}>)</span>
+                    <span className={isSelected ? "text-black" : "text-accent-crimson"}>)</span>
                   </>
                 ) : date.day}
               </span>
               <span className={`text-[8px] uppercase font-medium ${
-                isSelected ? "text-white/80" : "text-foreground/40 group-hover:text-foreground/60"
+                isSelected ? "text-black/80" : "text-foreground/40 group-hover:text-foreground/60"
               } transition-colors`}>
                 {date.wewaran}
               </span>
               {(date.isPurnama || date.isTilem) && (
                 <div className="absolute top-1.5 right-1.5 flex gap-1">
                   {date.isPurnama && (
-                    <div className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-white" : "bg-red-500"}`} />
+                    <div className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-black" : "bg-red-500"}`} />
                   )}
                   {date.isTilem && (
-                    <div className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-white" : "bg-gray-500"}`} />
+                    <div className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-black" : "bg-gray-500"}`} />
                   )}
                 </div>
               )}
@@ -128,7 +128,7 @@ export default function CalendarGrid() {
         key={selectedDate?.day}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mt-4 p-6 glass-card rounded-[2rem] border border-white/10 relative overflow-hidden"
+        className="mt-4 p-6 glass-card rounded-[2rem] border border-foreground/10 relative overflow-hidden"
       >
         {selectedDate ? (
           <>
@@ -158,7 +158,7 @@ export default function CalendarGrid() {
                   
                   <div className="relative z-10">
                     <p className="text-[10px] uppercase font-bold tracking-widest text-accent-gold mb-1 opacity-80">Hari Raya / Rahinan</p>
-                    <h4 className="text-xl font-bold font-outfit text-white drop-shadow-md leading-tight">{selectedDate.holiday}</h4>
+                    <h4 className="text-xl font-bold font-outfit text-foreground drop-shadow-md leading-tight">{selectedDate.holiday}</h4>
                   </div>
                 </div>
               </motion.div>
@@ -209,17 +209,17 @@ export default function CalendarGrid() {
             )}
             
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
-              <div className="bg-foreground/5 p-3 rounded-xl border border-white/5">
+              <div className="bg-foreground/5 p-3 rounded-xl border border-foreground/5">
                 <p className="text-[9px] uppercase font-bold text-foreground/30 mb-1">Sasih & Hari</p>
                 <p className="text-sm font-bold text-accent-gold">{selectedDate.baliInfo.sasih}</p>
                 <p className="text-[10px] text-foreground/60">{selectedDate.baliInfo.sasihDay}</p>
               </div>
-              <div className="bg-foreground/5 p-3 rounded-xl border border-white/5">
+              <div className="bg-foreground/5 p-3 rounded-xl border border-foreground/5">
                 <p className="text-[9px] uppercase font-bold text-foreground/30 mb-1">Wuku</p>
                 <p className="text-sm font-bold">{selectedDate.baliInfo.wuku}</p>
                 <p className="text-[10px] text-foreground/60">Tahun Saka {selectedDate.baliInfo.yearSaka}</p>
               </div>
-              <div className="bg-foreground/5 p-3 rounded-xl border border-white/5">
+              <div className="bg-foreground/5 p-3 rounded-xl border border-foreground/5">
                 <p className="text-[9px] uppercase font-bold text-foreground/30 mb-1">2 & 5 Wara</p>
                 <div className="flex gap-2 items-center">
                   <p className="text-sm font-bold">{selectedDate.baliInfo.saptawara}</p>
@@ -227,7 +227,7 @@ export default function CalendarGrid() {
                   <p className="text-sm font-bold">{selectedDate.baliInfo.pancawara}</p>
                 </div>
               </div>
-              <div className="bg-foreground/5 p-3 rounded-xl border border-white/5">
+              <div className="bg-foreground/5 p-3 rounded-xl border border-foreground/5">
                 <p className="text-[9px] uppercase font-bold text-foreground/30 mb-1">Catur & Asta</p>
                 <div className="flex gap-2 items-center">
                   <p className="text-xs font-bold">{selectedDate.baliInfo.caturwara}</p>
@@ -235,7 +235,7 @@ export default function CalendarGrid() {
                   <p className="text-xs font-bold">{selectedDate.baliInfo.astawara}</p>
                 </div>
               </div>
-              <div className="bg-foreground/5 p-3 rounded-xl border border-white/5">
+              <div className="bg-foreground/5 p-3 rounded-xl border border-foreground/5">
                 <p className="text-[9px] uppercase font-bold text-foreground/30 mb-1">Tri & Sad</p>
                 <div className="flex gap-2 items-center">
                   <p className="text-xs font-bold">{selectedDate.baliInfo.triwara}</p>
@@ -243,7 +243,7 @@ export default function CalendarGrid() {
                   <p className="text-xs font-bold">{selectedDate.baliInfo.sadwara}</p>
                 </div>
               </div>
-              <div className="bg-foreground/5 p-3 rounded-xl border border-white/5">
+              <div className="bg-foreground/5 p-3 rounded-xl border border-foreground/5">
                 <p className="text-[9px] uppercase font-bold text-foreground/30 mb-1">Ekawara & Dwi</p>
                 <div className="flex gap-2 items-center">
                   <p className="text-xs font-bold">{selectedDate.baliInfo.ekawara}</p>
@@ -253,7 +253,7 @@ export default function CalendarGrid() {
               </div>
             </div>
             
-            <div className="mt-5 pt-4 border-t border-white/5">
+            <div className="mt-5 pt-4 border-t border-foreground/5">
               <p className="text-[11px] text-foreground/50 font-medium leading-relaxed italic">
                 {selectedDate.holiday ? `Hari ini adalah ${selectedDate.holiday}. ` : ""}
                 Bertepatan dengan Sasih {selectedDate.baliInfo.sasih} ({selectedDate.baliInfo.sasihDay}), 

@@ -62,7 +62,7 @@ export default function FinderPage() {
               variants={item}
               onClick={() => setSelected(cat.id)}
               className={`glass-card p-5 rounded-3xl cursor-pointer transition-all duration-500 relative overflow-hidden group ${
-                isSelected ? "ring-2 ring-accent-gold shadow-[0_0_20px_rgba(250,212,130,0.1)]" : "hover:border-white/20"
+                isSelected ? "ring-2 ring-accent-gold shadow-[0_0_20px_rgba(250,212,130,0.1)]" : "hover:border-foreground/20"
               }`}
             >
               {isSelected && (
@@ -74,7 +74,7 @@ export default function FinderPage() {
                   <Icon size={22} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm tracking-tight text-white mb-0.5">{cat.label}</h3>
+                  <h3 className="font-bold text-sm tracking-tight text-foreground mb-0.5">{cat.label}</h3>
                   <p className="text-[10px] text-foreground/40 font-medium leading-tight">{cat.desc}</p>
                 </div>
               </div>
@@ -91,7 +91,7 @@ export default function FinderPage() {
         >
           <div className="flex items-center justify-between px-2">
             <h4 className="text-sm font-bold uppercase tracking-widest text-accent-gold/40">Hasil Pencarian</h4>
-            <div className="px-2 py-0.5 rounded-full bg-foreground/5 text-[10px] text-foreground/40 font-bold border border-white/5">
+            <div className="px-2 py-0.5 rounded-full bg-foreground/5 text-[10px] text-foreground/40 font-bold border border-foreground/5">
               {results.length} Hari Ditemukan
             </div>
           </div>
@@ -102,16 +102,16 @@ export default function FinderPage() {
                 key={res.day}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="glass-card p-5 rounded-[2rem] border border-white/5 flex items-center justify-between group hover:border-accent-gold/30 transition-all duration-300 shadow-sm"
+                className="glass-card p-5 rounded-[2rem] border border-foreground/5 flex items-center justify-between group hover:border-accent-gold/30 transition-all duration-300 shadow-sm"
               >
                 <div className="flex gap-5 items-center">
-                  <div className={`w-14 h-14 rounded-2xl bg-foreground/5 flex flex-col items-center justify-center border border-white/5 group-hover:bg-accent-gold/10 group-hover:border-accent-gold/20 transition-colors`}>
+                  <div className={`w-14 h-14 rounded-2xl bg-foreground/5 flex flex-col items-center justify-center border border-foreground/5 group-hover:bg-accent-gold/10 group-hover:border-accent-gold/20 transition-colors`}>
                     <span className="text-[10px] uppercase font-bold text-foreground/30 group-hover:text-accent-gold/50">Tgl</span>
                     <span className="text-xl font-bold font-outfit">{res.day}</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <p className="text-sm font-bold font-outfit text-white">{res.info}</p>
+                      <p className="text-sm font-bold font-outfit text-foreground">{res.info}</p>
                       <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter ${
                         res.quality === "Sangat Baik" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/20" : "bg-blue-500/20 text-blue-400 border border-blue-500/20"
                       }`}>
@@ -127,7 +127,7 @@ export default function FinderPage() {
               </motion.div>
             ))}
             {results.length === 0 && (
-              <div className="text-center py-12 px-6 glass-card rounded-[2rem] border-dashed border-white/10">
+              <div className="text-center py-12 px-6 glass-card rounded-[2rem] border-dashed border-foreground/10">
                 <p className="text-sm text-foreground/30 font-medium italic">Tidak ada dewasa ayu ditemukan bulan ini untuk kategori tersebut.</p>
               </div>
             )}

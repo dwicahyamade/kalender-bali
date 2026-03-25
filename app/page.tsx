@@ -87,10 +87,10 @@ export default function Home() {
         <div className="mt-10">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="font-bold text-xl font-outfit text-white">Rahinan Bulan Ini</h3>
+              <h3 className="font-bold text-xl font-outfit text-foreground">Rahinan Bulan Ini</h3>
               <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-accent-gold/50">{currentMonthName}</p>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-accent-gold">
+            <div className="w-10 h-10 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center justify-center text-accent-gold">
               <CalendarIcon size={20} />
             </div>
           </div>
@@ -110,17 +110,17 @@ export default function Home() {
                       <motion.div 
                         key={`up-${i}`}
                         whileHover={{ x: 5 }}
-                        className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.07] hover:border-accent-gold/20 transition-all group"
+                        className="flex items-center gap-4 p-4 rounded-2xl bg-foreground/[0.03] border border-foreground/5 hover:bg-foreground/[0.07] hover:border-accent-gold/20 transition-all group"
                       >
-                        <div className="flex flex-col items-center justify-center min-w-[48px] h-12 rounded-xl bg-white/5 border border-white/5 group-hover:bg-accent-gold/10 transition-colors">
+                        <div className="flex flex-col items-center justify-center min-w-[48px] h-12 rounded-xl bg-foreground/5 border border-foreground/5 group-hover:bg-accent-gold/10 transition-colors">
                           <span className="text-[9px] font-bold text-foreground/30 uppercase leading-none mb-1 group-hover:text-accent-gold/50">Tgl</span>
                           <span className="text-base font-bold font-outfit leading-none">{h.day}</span>
                         </div>
                         <div className="flex-1">
-                          <h4 className="text-sm font-bold text-white group-hover:text-accent-gold transition-colors">{h.name}</h4>
+                          <h4 className="text-sm font-bold text-foreground group-hover:text-accent-gold transition-colors">{h.name}</h4>
                           <p className="text-[10px] text-foreground/40 font-medium">Bulan {currentMonthName.split(' ')[0]}</p>
                         </div>
-                        <ArrowRight size={14} className="text-white/10 group-hover:text-accent-gold/40 transition-colors" />
+                        <ArrowRight size={14} className="text-foreground/10 group-hover:text-accent-gold/40 transition-colors" />
                       </motion.div>
                     ))}
                 </div>
@@ -135,7 +135,7 @@ export default function Home() {
                   {monthHolidays
                     .filter(h => h.day < new Date().getDate())
                     .map((h, i) => (
-                      <div key={`past-${i}`} className="flex items-center gap-4 p-3 rounded-2xl bg-black/20 border border-white/5">
+                      <div key={`past-${i}`} className="flex items-center gap-4 p-3 rounded-2xl bg-foreground/5 border border-foreground/5">
                         <div className="flex flex-col items-center justify-center min-w-[40px] h-10 rounded-lg bg-white/5 grayscale">
                           <span className="text-sm font-bold font-outfit">{h.day}</span>
                         </div>
@@ -149,7 +149,7 @@ export default function Home() {
             )}
 
             {monthHolidays.length === 0 && (
-              <div className="text-center py-10 px-6 border border-dashed border-white/10 rounded-3xl">
+              <div className="text-center py-10 px-6 border border-dashed border-foreground/10 rounded-3xl">
                 <p className="text-sm text-foreground/30 font-medium italic">Tidak ada rahinan di bulan ini.</p>
               </div>
             )}
